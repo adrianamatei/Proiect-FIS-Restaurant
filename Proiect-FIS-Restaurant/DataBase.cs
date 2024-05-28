@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using System.Configuration;
 using System.Collections.Generic;
 
@@ -12,19 +13,23 @@ namespace Proiect_FIS_Restaurant
         {
             connectionString = ConfigurationManager.ConnectionStrings["Restaurant"].ConnectionString;
         }
-
+        // Constructor suplimentar pentru teste
+        public Database(string testConnectionString)
+        {
+            connectionString = testConnectionString;
+        }
         public SqlConnection GetConnection()
         {
             return new SqlConnection(connectionString);
         }
 
-        public List<MenuItem> GetMenuItems()
+        public virtual List<MenuItem> GetMenuItems()
         {
             var menuItems = new List<MenuItem>();
             using (var connection = GetConnection())
             {
                 connection.Open();
-                string query = "SELECT Name, Category, Price, Ingredients, IsSpicy, IsVegetarian, IsAvailable FROM MenuItems";
+                string query = "SELECT MenuItemId, Name, Category, Price, Ingredients, IsSpicy, IsVegetarian, IsAvailable FROM MenuItems";
                 using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = command.ExecuteReader())
@@ -33,6 +38,7 @@ namespace Proiect_FIS_Restaurant
                         {
                             menuItems.Add(new MenuItem
                             {
+                                MenuItemId = reader.GetInt32(reader.GetOrdinal("MenuItemId")),
                                 Name = reader["Name"].ToString(),
                                 Category = reader["Category"].ToString(),
                                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
@@ -48,7 +54,39 @@ namespace Proiect_FIS_Restaurant
             return menuItems;
         }
 
-        public void AddMenuItem(MenuItem menuItem)
+        public virtual MenuItem GetMenuItemById(int menuItemId)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                string query = "SELECT MenuItemId, Name, Category, Price, Ingredients, IsSpicy, IsVegetarian, IsAvailable FROM MenuItems WHERE MenuItemId = @MenuItemId";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@MenuItemId", menuItemId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new MenuItem
+                            {
+                                MenuItemId = reader.GetInt32(reader.GetOrdinal("MenuItemId")),
+                                Name = reader["Name"].ToString(),
+                                Category = reader["Category"].ToString(),
+                                Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                                Ingredients = reader["Ingredients"].ToString(),
+                                IsSpicy = reader.GetBoolean(reader.GetOrdinal("IsSpicy")),
+                                IsVegetarian = reader.GetBoolean(reader.GetOrdinal("IsVegetarian")),
+                                IsAvailable = reader.GetBoolean(reader.GetOrdinal("IsAvailable"))
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public virtual void AddMenuItem(MenuItem menuItem)
         {
             using (var connection = GetConnection())
             {
@@ -69,7 +107,7 @@ namespace Proiect_FIS_Restaurant
             }
         }
 
-        public void UpdateMenuItemAvailability(string itemName, bool isAvailable)
+        public virtual void UpdateMenuItemAvailability(string itemName, bool isAvailable)
         {
             using (var connection = GetConnection())
             {

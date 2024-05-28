@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -115,9 +117,6 @@ namespace Proiect_FIS_Restaurant
             }
         }
 
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
 
-        }
     }
 }

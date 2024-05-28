@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Proiect_FIS_Restaurant.Database">
+    <Position X="3" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAQAAAAAAgAAAAAAAAAAACAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>DataBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Object" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Proiect_FIS_Restaurant.MenuItem">
+    <Position X="6" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAACUAAQAAAIAAAAAAAIAACAA=</HashCode>
+      <FileName>MenuItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MenuManager">
+    <Position X="7.25" Y="4.5" Width="1.5" />
+    <InheritanceLine Type="System.Object" FixedToPoint="true">
+      <Path>
+        <Point X="6" Y="1.062" />
+        <Point X="6" Y="1.312" />
+        <Point X="7.66" Y="1.312" />
+        <Point X="7.66" Y="4.26" />
+        <Point X="8" Y="4.26" />
+        <Point X="8" Y="4.5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAEAAQAAAAAAAAAAAAAAAAAACAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>MenuManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Proiect_FIS_Restaurant.Order">
+    <Position X="0.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EEAAAAAEAAAACAAAAEAAAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Order.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Proiect_FIS_Restaurant.OrderItem">
+    <Position X="10.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAQAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Order.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Proiect_FIS_Restaurant.OrderManager">
+    <Position X="1.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAASAgAAAAAAAAAg=</HashCode>
+      <FileName>OrderManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Proiect_FIS_Restaurant.Proiect_FIS_Restaurant.User">
+    <Position X="4.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEQAAAAgAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Proiect_FIS_Restaurant.UserManager">
+    <Position X="8" Y="1.75" Width="1.5" />
+    <InheritanceLine Type="System.Object" FixedFromPoint="true">
+      <Path>
+        <Point X="6" Y="1.062" />
+        <Point X="6" Y="1.312" />
+        <Point X="8.75" Y="1.312" />
+        <Point X="8.75" Y="1.75" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAIAAAAAAAQgEAAAAAAAAAA=</HashCode>
+      <FileName>UserManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

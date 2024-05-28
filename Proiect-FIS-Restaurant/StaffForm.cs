@@ -8,7 +8,6 @@ namespace Proiect_FIS_Restaurant
     {
         private OrderManager _orderManager;
         private MenuManager _menuManager;
-        private Database _database;
 
         public StaffForm(Database database)
         {
@@ -39,6 +38,9 @@ namespace Proiect_FIS_Restaurant
                     itemsDetails
                 });
                 listViewOrders.Items.Add(listViewItem);
+
+                // Debugging output
+                Console.WriteLine($"Added Order ID: {order.OrderId}, Items: {itemsDetails}");
             }
         }
 

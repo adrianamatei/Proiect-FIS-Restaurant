@@ -27,6 +27,13 @@ namespace Proiect_FIS_Restaurant
 
                 foreach (var item in order.Items)
                 {
+                    // Verificăm existența MenuItemId înainte de a insera în OrderDetails
+                    var menuItem = _database.GetMenuItemById(item.MenuItemId);
+                    if (menuItem == null)
+                    {
+                        throw new Exception($"MenuItemId {item.MenuItemId} does not exist.");
+                    }
+
                     var orderDetailCommand = new SqlCommand("INSERT INTO OrderDetails (OrderId, MenuItemId, Quantity) VALUES (@OrderId, @MenuItemId, @Quantity)", connection);
                     orderDetailCommand.Parameters.AddWithValue("@OrderId", order.OrderId);
                     orderDetailCommand.Parameters.AddWithValue("@MenuItemId", item.MenuItemId);
@@ -61,12 +68,16 @@ namespace Proiect_FIS_Restaurant
                         orders.Add(order);
                     }
                 }
+            }
 
-                // Fetch order items separately after closing the initial reader
-                foreach (var order in orders)
+            foreach (var order in orders)
+            {
+                using (var connection = _database.GetConnection())
                 {
                     var orderDetailsCommand = new SqlCommand("SELECT * FROM OrderDetails JOIN MenuItems ON OrderDetails.MenuItemId = MenuItems.MenuItemId WHERE OrderId = @OrderId", connection);
                     orderDetailsCommand.Parameters.AddWithValue("@OrderId", order.OrderId);
+
+                    connection.Open();
 
                     using (var orderDetailsReader = orderDetailsCommand.ExecuteReader())
                     {
@@ -81,6 +92,12 @@ namespace Proiect_FIS_Restaurant
                         }
                     }
                 }
+            }
+
+            // Debugging output
+            foreach (var order in orders)
+            {
+                Console.WriteLine($"Order ID: {order.OrderId}, Status: {order.Status}, Items: {order.Items.Count}");
             }
 
             return orders;
