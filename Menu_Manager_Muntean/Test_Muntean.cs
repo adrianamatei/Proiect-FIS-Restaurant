@@ -14,9 +14,9 @@ namespace Menu_Manager_Muntean
     [TestClass]
     public class Test_Muntean
     {
-        private Mock<Database> _mockDatabase;
-        private Mock<MenuManager> _mockMenuManager;
-        private ManagerForm _managerForm;
+        private Mock<Database>? _mockDatabase;
+        private Mock<MenuManager>? _mockMenuManager;
+        private ManagerForm? _managerForm;
 
         [TestInitialize]
         public void Setup()
@@ -30,7 +30,7 @@ namespace Menu_Manager_Muntean
         [TestCleanup]
         public void Cleanup()
         {
-            _managerForm.Close();
+            _managerForm?.Close();
         }
 
         [TestMethod]
@@ -47,7 +47,7 @@ namespace Menu_Manager_Muntean
                 IsVegetarian = true,
                 IsAvailable = true
             };
-            _mockMenuManager.Setup(m => m.AddMenuItem(newItem));
+            _mockMenuManager?.Setup(m => m.AddMenuItem(newItem));
 
             var txtName = new TextBox { Name = "txtName", Text = newItem.Name };
             var txtCategory = new TextBox { Name = "txtCategory", Text = newItem.Category };
@@ -56,21 +56,24 @@ namespace Menu_Manager_Muntean
             var chkIsSpicy = new CheckBox { Name = "chkIsSpicy", Checked = newItem.IsSpicy };
             var chkIsVegetarian = new CheckBox { Name = "chkIsVegetarian", Checked = newItem.IsVegetarian };
 
-            _managerForm.Controls.Add(txtName);
-            _managerForm.Controls.Add(txtCategory);
-            _managerForm.Controls.Add(txtPrice);
-            _managerForm.Controls.Add(txtIngredients);
-            _managerForm.Controls.Add(chkIsSpicy);
-            _managerForm.Controls.Add(chkIsVegetarian);
+            _managerForm?.Controls.Add(txtName);
+            _managerForm?.Controls.Add(txtCategory);
+            _managerForm?.Controls.Add(txtPrice);
+            _managerForm?.Controls.Add(txtIngredients);
+            _managerForm?.Controls.Add(chkIsSpicy);
+            _managerForm?.Controls.Add(chkIsVegetarian);
 
-            PrivateObject privateObject = new PrivateObject(_managerForm);
-            privateObject.SetField("_menuManager", _mockMenuManager.Object);
+            if (_managerForm != null && _mockMenuManager != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
+                privateObject.SetField("_menuManager", _mockMenuManager.Object);
 
-            // Act
-            privateObject.Invoke("Product_Click", this, EventArgs.Empty);
+                // Act
+                privateObject.Invoke("Product_Click", new object[] { this, EventArgs.Empty });
 
-            // Assert
-            _mockMenuManager.Verify(m => m.AddMenuItem(It.IsAny<MenuItem>()), Times.Once);
+                // Assert
+                _mockMenuManager.Verify(m => m.AddMenuItem(It.IsAny<MenuItem>()), Times.Once);
+            }
         }
 
         [TestMethod]
@@ -82,20 +85,28 @@ namespace Menu_Manager_Muntean
                 new MenuItem { Name = "Pasta", Category = "Main Course", Price = 12.99m, IsAvailable = true },
                 new MenuItem { Name = "Soup", Category = "Starter", Price = 5.99m, IsAvailable = false }
             };
-            _mockMenuManager.Setup(m => m.GetMenuItems()).Returns(menuItems);
-            PrivateObject privateObject = new PrivateObject(_managerForm);
-            privateObject.SetField("_menuManager", _mockMenuManager.Object);
+            _mockMenuManager?.Setup(m => m.GetMenuItems()).Returns(menuItems);
 
-            // Act
-            privateObject.Invoke("LoadMenuItems");
+            if (_managerForm != null && _mockMenuManager != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
+                privateObject.SetField("_menuManager", _mockMenuManager.Object);
 
-            // Assert
-            var listView = (ListView)privateObject.GetField("listViewMenu");
-            Assert.AreEqual(2, listView.Items.Count);
-            Assert.AreEqual("Pasta", listView.Items[0].SubItems[0].Text);
-            Assert.AreEqual("Main Course", listView.Items[0].SubItems[1].Text);
-            Assert.AreEqual("12.99", listView.Items[0].SubItems[2].Text);
-            Assert.AreEqual("Yes", listView.Items[0].SubItems[3].Text);
+                // Act
+                privateObject.Invoke("LoadMenuItems");
+
+                // Assert
+                var listView = (ListView?)privateObject.GetField("listViewMenu");
+                Assert.IsNotNull(listView);
+                if (listView != null)
+                {
+                    Assert.AreEqual(2, listView.Items.Count);
+                    Assert.AreEqual("Pasta", listView.Items[0].SubItems[0].Text);
+                    Assert.AreEqual("Main Course", listView.Items[0].SubItems[1].Text);
+                    Assert.AreEqual("12.99", listView.Items[0].SubItems[2].Text);
+                    Assert.AreEqual("Yes", listView.Items[0].SubItems[3].Text);
+                }
+            }
         }
 
         [TestMethod]
@@ -103,31 +114,34 @@ namespace Menu_Manager_Muntean
         {
             // Arrange
             var menuItem = new MenuItem { Name = "Pasta", IsAvailable = true };
-            _mockMenuManager.Setup(m => m.UpdateMenuItemAvailability(menuItem.Name, false));
+            _mockMenuManager?.Setup(m => m.UpdateMenuItemAvailability(menuItem.Name, false));
 
             var listView = new ListView();
             var listViewItem = new ListViewItem(new[] { menuItem.Name, "Main Course", "12.99", "Yes" });
             listView.Items.Add(listViewItem);
             listView.Items[0].Selected = true;
-            _managerForm.Controls.Add(listView);
+            _managerForm?.Controls.Add(listView);
 
-            PrivateObject privateObject = new PrivateObject(_managerForm);
-            privateObject.SetField("listViewMenu", listView);
-            privateObject.SetField("_menuManager", _mockMenuManager.Object);
+            if (_managerForm != null && _mockMenuManager != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
+                privateObject.SetField("listViewMenu", listView);
+                privateObject.SetField("_menuManager", _mockMenuManager.Object);
 
-            // Act
-            privateObject.Invoke("btnUpdateAvailability_Click", this, EventArgs.Empty);
+                // Act
+                privateObject.Invoke("btnUpdateAvailability_Click", new object[] { this, EventArgs.Empty });
 
-            // Assert
-            _mockMenuManager.Verify(m => m.UpdateMenuItemAvailability(menuItem.Name, false), Times.Once);
-            Assert.AreEqual("No", listView.Items[0].SubItems[3].Text);
+                // Assert
+                _mockMenuManager.Verify(m => m.UpdateMenuItemAvailability(menuItem.Name, false), Times.Once);
+                Assert.AreEqual("No", listView.Items[0].SubItems[3].Text);
+            }
         }
 
         [TestMethod]
         public void Product_Click_ShouldShowErrorMessage_WhenExceptionIsThrown()
         {
             // Arrange
-            _mockMenuManager.Setup(m => m.AddMenuItem(It.IsAny<MenuItem>())).Throws(new Exception("Test Exception"));
+            _mockMenuManager?.Setup(m => m.AddMenuItem(It.IsAny<MenuItem>())).Throws(new Exception("Test Exception"));
 
             var txtName = new TextBox { Name = "txtName", Text = "Pasta" };
             var txtCategory = new TextBox { Name = "txtCategory", Text = "Main Course" };
@@ -136,37 +150,43 @@ namespace Menu_Manager_Muntean
             var chkIsSpicy = new CheckBox { Name = "chkIsSpicy", Checked = false };
             var chkIsVegetarian = new CheckBox { Name = "chkIsVegetarian", Checked = true };
 
-            _managerForm.Controls.Add(txtName);
-            _managerForm.Controls.Add(txtCategory);
-            _managerForm.Controls.Add(txtPrice);
-            _managerForm.Controls.Add(txtIngredients);
-            _managerForm.Controls.Add(chkIsSpicy);
-            _managerForm.Controls.Add(chkIsVegetarian);
+            _managerForm?.Controls.Add(txtName);
+            _managerForm?.Controls.Add(txtCategory);
+            _managerForm?.Controls.Add(txtPrice);
+            _managerForm?.Controls.Add(txtIngredients);
+            _managerForm?.Controls.Add(chkIsSpicy);
+            _managerForm?.Controls.Add(chkIsVegetarian);
 
-            PrivateObject privateObject = new PrivateObject(_managerForm);
-            privateObject.SetField("_menuManager", _mockMenuManager.Object);
+            if (_managerForm != null && _mockMenuManager != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
+                privateObject.SetField("_menuManager", _mockMenuManager.Object);
 
-            // Act
-            privateObject.Invoke("Product_Click", this, EventArgs.Empty);
+                // Act
+                privateObject.Invoke("Product_Click", new object[] { this, EventArgs.Empty });
 
-            // Assert
-            var messageBoxText = privateObject.Invoke("GetLastError") as string;
-            Assert.IsTrue(messageBoxText.Contains("Test Exception"));
+                // Assert
+                var messageBoxText = privateObject.Invoke("GetLastError") as string ?? string.Empty;
+                Assert.IsTrue(messageBoxText.Contains("Test Exception"));
+            }
         }
 
         [TestMethod]
         public void BtnWelcome_Click_ShouldNavigateToWelcomeForm()
         {
             // Arrange
-            PrivateObject privateObject = new PrivateObject(_managerForm);
+            if (_managerForm != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
 
-            // Act
-            privateObject.Invoke("btnWelcome_Click", this, EventArgs.Empty);
+                // Act
+                privateObject.Invoke("btnWelcome_Click", new object[] { this, EventArgs.Empty });
 
-            // Assert
-            var welcomeForm = Application.OpenForms["Welcome"];
-            Assert.IsNotNull(welcomeForm);
-            Assert.IsFalse(_managerForm.Visible);
+                // Assert
+                var welcomeForm = Application.OpenForms["Welcome"];
+                Assert.IsNotNull(welcomeForm);
+                Assert.IsFalse(_managerForm.Visible);
+            }
         }
     }
 }

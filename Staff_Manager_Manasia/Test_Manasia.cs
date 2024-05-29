@@ -11,9 +11,9 @@ namespace Staff_Manager_Manasia
     [TestClass]
     public class Test_Manasia
     {
-        private Mock<Database> _mockDatabase;
-        private Mock<UserManager> _mockUserManager;
-        private ManagerForm _managerForm;
+        private Mock<Database>? _mockDatabase;
+        private Mock<UserManager>? _mockUserManager;
+        private ManagerForm? _managerForm;
 
         [TestInitialize]
         public void Setup()
@@ -27,7 +27,7 @@ namespace Staff_Manager_Manasia
         [TestCleanup]
         public void Cleanup()
         {
-            _managerForm.Close();
+            _managerForm?.Close();
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Staff_Manager_Manasia
                 Password = "password",
                 Role = "Staff"
             };
-            _mockUserManager.Setup(m => m.AddUser(newUser));
+            _mockUserManager?.Setup(m => m.AddUser(newUser));
 
             var txtUsername = new TextBox { Name = "txtUsername", Text = newUser.Username };
             var txtPassword = new TextBox { Name = "txtPassword", Text = newUser.Password };
@@ -48,18 +48,21 @@ namespace Staff_Manager_Manasia
             cmbRole.Items.Add("Staff");
             cmbRole.SelectedIndex = 0;
 
-            _managerForm.Controls.Add(txtUsername);
-            _managerForm.Controls.Add(txtPassword);
-            _managerForm.Controls.Add(cmbRole);
+            _managerForm?.Controls.Add(txtUsername);
+            _managerForm?.Controls.Add(txtPassword);
+            _managerForm?.Controls.Add(cmbRole);
 
-            PrivateObject privateObject = new PrivateObject(_managerForm);
-            privateObject.SetField("_userManager", _mockUserManager.Object);
+            if (_managerForm != null && _mockUserManager != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
+                privateObject.SetField("_userManager", _mockUserManager.Object);
 
-            // Act
-            privateObject.Invoke("user_Click", this, EventArgs.Empty);
+                // Act
+                privateObject.Invoke("user_Click", this, EventArgs.Empty);
 
-            // Assert
-            _mockUserManager.Verify(m => m.AddUser(It.IsAny<User>()), Times.Once);
+                // Assert
+                _mockUserManager.Verify(m => m.AddUser(It.IsAny<User>()), Times.Once);
+            }
         }
 
         [TestMethod]
@@ -71,27 +74,35 @@ namespace Staff_Manager_Manasia
                 new User { Username = "manager", Role = "Manager" },
                 new User { Username = "staff", Role = "Staff" }
             };
-            _mockUserManager.Setup(m => m.GetUsers()).Returns(users);
-            PrivateObject privateObject = new PrivateObject(_managerForm);
-            privateObject.SetField("_userManager", _mockUserManager.Object);
+            _mockUserManager?.Setup(m => m.GetUsers()).Returns(users);
 
-            // Act
-            privateObject.Invoke("LoadUsers");
+            if (_managerForm != null && _mockUserManager != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
+                privateObject.SetField("_userManager", _mockUserManager.Object);
 
-            // Assert
-            var listView = (ListView)privateObject.GetField("listViewUsers");
-            Assert.AreEqual(2, listView.Items.Count);
-            Assert.AreEqual("manager", listView.Items[0].SubItems[0].Text);
-            Assert.AreEqual("Manager", listView.Items[0].SubItems[1].Text);
-            Assert.AreEqual("staff", listView.Items[1].SubItems[0].Text);
-            Assert.AreEqual("Staff", listView.Items[1].SubItems[1].Text);
+                // Act
+                privateObject.Invoke("LoadUsers");
+
+                // Assert
+                var listView = (ListView?)privateObject.GetField("listViewUsers");
+                Assert.IsNotNull(listView);
+                if (listView != null)
+                {
+                    Assert.AreEqual(2, listView.Items.Count);
+                    Assert.AreEqual("manager", listView.Items[0].SubItems[0].Text);
+                    Assert.AreEqual("Manager", listView.Items[0].SubItems[1].Text);
+                    Assert.AreEqual("staff", listView.Items[1].SubItems[0].Text);
+                    Assert.AreEqual("Staff", listView.Items[1].SubItems[1].Text);
+                }
+            }
         }
 
         [TestMethod]
         public void AddUser_Click_ShouldShowErrorMessage_WhenExceptionIsThrown()
         {
             // Arrange
-            _mockUserManager.Setup(m => m.AddUser(It.IsAny<User>())).Throws(new Exception("Test Exception"));
+            _mockUserManager?.Setup(m => m.AddUser(It.IsAny<User>())).Throws(new Exception("Test Exception"));
 
             var txtUsername = new TextBox { Name = "txtUsername", Text = "newuser" };
             var txtPassword = new TextBox { Name = "txtPassword", Text = "password" };
@@ -99,50 +110,60 @@ namespace Staff_Manager_Manasia
             cmbRole.Items.Add("Staff");
             cmbRole.SelectedIndex = 0;
 
-            _managerForm.Controls.Add(txtUsername);
-            _managerForm.Controls.Add(txtPassword);
-            _managerForm.Controls.Add(cmbRole);
+            _managerForm?.Controls.Add(txtUsername);
+            _managerForm?.Controls.Add(txtPassword);
+            _managerForm?.Controls.Add(cmbRole);
 
-            PrivateObject privateObject = new PrivateObject(_managerForm);
-            privateObject.SetField("_userManager", _mockUserManager.Object);
+            if (_managerForm != null && _mockUserManager != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
+                privateObject.SetField("_userManager", _mockUserManager.Object);
 
-            // Act
-            privateObject.Invoke("user_Click", this, EventArgs.Empty);
+                // Act
+                privateObject.Invoke("user_Click", this, EventArgs.Empty);
 
-            // Assert
-            var messageBoxText = privateObject.Invoke("GetLastError") as string;
-            Assert.IsTrue(messageBoxText.Contains("Test Exception"));
+                // Assert
+                var messageBoxText = privateObject.Invoke("GetLastError") as string;
+                Assert.IsTrue(messageBoxText?.Contains("Test Exception") == true);
+            }
         }
 
         [TestMethod]
         public void BtnWelcome_Click_ShouldNavigateToWelcomeForm()
         {
             // Arrange
-            PrivateObject privateObject = new PrivateObject(_managerForm);
+            if (_managerForm != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
 
-            // Act
-            privateObject.Invoke("btnWelcome_Click", this, EventArgs.Empty);
+                // Act
+                privateObject.Invoke("btnWelcome_Click", this, EventArgs.Empty);
 
-            // Assert
-            var welcomeForm = Application.OpenForms["Welcome"];
-            Assert.IsNotNull(welcomeForm);
-            Assert.IsFalse(_managerForm.Visible);
+                // Assert
+                var welcomeForm = Application.OpenForms["Welcome"];
+                Assert.IsNotNull(welcomeForm);
+                Assert.IsFalse(_managerForm.Visible);
+            }
         }
 
         [TestMethod]
         public void LoadUsers_ShouldShowErrorMessage_WhenExceptionIsThrown()
         {
             // Arrange
-            _mockUserManager.Setup(m => m.GetUsers()).Throws(new Exception("Test Exception"));
-            PrivateObject privateObject = new PrivateObject(_managerForm);
-            privateObject.SetField("_userManager", _mockUserManager.Object);
+            _mockUserManager?.Setup(m => m.GetUsers()).Throws(new Exception("Test Exception"));
 
-            // Act
-            privateObject.Invoke("LoadUsers");
+            if (_managerForm != null && _mockUserManager != null)
+            {
+                PrivateObject privateObject = new PrivateObject(_managerForm);
+                privateObject.SetField("_userManager", _mockUserManager.Object);
 
-            // Assert
-            var messageBoxText = privateObject.Invoke("GetLastError") as string;
-            Assert.IsTrue(messageBoxText.Contains("Test Exception"));
+                // Act
+                privateObject.Invoke("LoadUsers");
+
+                // Assert
+                var messageBoxText = privateObject.Invoke("GetLastError") as string;
+                Assert.IsTrue(messageBoxText?.Contains("Test Exception") == true);
+            }
         }
     }
 }
